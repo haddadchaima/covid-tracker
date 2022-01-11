@@ -1,0 +1,55 @@
+<h3 class="ml-3 mt-3">People tested positive</h3>
+
+
+<!-- Daily -->
+<button type="button" class="btn btn-secondary ml-3" (click)="getAllCases()">Daily</button><br>
+
+<div class="btn-group mt-3">
+<form  [formGroup]="casesForm" (ngSubmit)="getCasesBySelect()">
+<mat-form-field appearance="fill" class="ml-3">
+  <mat-label>Month</mat-label>
+  <mat-select formControlName="month">
+    <mat-option *ngFor="let month of months" [value]="month.value">
+      {{month.viewValue}}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
+
+<mat-form-field appearance="fill" class="ml-3">
+  <mat-label>Year</mat-label>
+  <mat-select formControlName="year">
+    <mat-option *ngFor="let year of years" [value]="year.value">
+      {{year.viewValue}}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
+
+
+
+<mat-form-field   appearance="fill" class="ml-3">
+  <mat-label>Country</mat-label>
+  <mat-select formControlName="area" >
+    <mat-option *ngFor="let area of areas" [value]="area.areaCode">
+      {{area.areaName}}
+    </mat-option>
+  </mat-select>
+
+</mat-form-field>
+<button type="submit" class="btn btn-primary ml-3">Go</button>
+
+</form>
+</div>
+
+<div>
+  <google-chart 
+    [data]="chartData.data"
+    [type]="chartData.type" 
+    [columns]="chartData.columnNames" 
+    [options]="chartData.options" 
+    [width]="chartData.width"
+    [height]="chartData.height">
+      
+</google-chart>
+</div>
+
+

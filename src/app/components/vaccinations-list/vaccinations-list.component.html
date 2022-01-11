@@ -1,0 +1,44 @@
+<h3 class="ml-3 mt-3">Vaccinated People</h3>
+
+
+<!-- Daily -->
+
+<div class="btn-group mt-3">
+<form  [formGroup]="casesForm" (ngSubmit)="getCasesBySelect()">
+
+<mat-form-field appearance="fill" class="ml-3">
+  <mat-label>Year</mat-label>
+  <mat-select formControlName="year">
+    <mat-option *ngFor="let year of years" [value]="year.value">
+      {{year.viewValue}}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
+
+<mat-form-field   appearance="fill" class="ml-3">
+  <mat-label>Country</mat-label>
+  <mat-select formControlName="area" >
+    <mat-option *ngFor="let area of areas" [value]="area.areaCode">
+      {{area.areaName}}
+    </mat-option>
+  </mat-select>
+
+</mat-form-field>
+<button type="submit" class="btn btn-primary ml-3">Go</button>
+
+</form>
+</div>
+
+<div>
+  <google-chart 
+    [data]="chartData.data"
+    [type]="chartData.type" 
+    [columns]="chartData.columnNames" 
+    [options]="chartData.options" 
+    [width]="chartData.width"
+    [height]="chartData.height">
+      
+</google-chart>
+</div>
+
+
