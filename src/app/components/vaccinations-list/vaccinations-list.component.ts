@@ -2,9 +2,8 @@ import { formatDate } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { Case } from 'src/app/models/case';
-import { Vaccination } from 'src/app/models/vaccination';
 import { AreaService } from 'src/app/services/area.service';
-import { VaccinationsService } from 'src/app/services/vaccinations.service';
+import { CasesService } from 'src/app/services/cases.service';
 
 interface ValueSelect {
   value: number;
@@ -37,7 +36,7 @@ export class VaccinationsListComponent implements OnInit {
 
   chartData: any;
 
-  constructor(private fb: FormBuilder, private casesService: VaccinationsService, private areaService: AreaService) { }
+  constructor(private fb: FormBuilder, private casesService: CasesService, private areaService: AreaService) { }
 
 
   ngOnInit(): void {
