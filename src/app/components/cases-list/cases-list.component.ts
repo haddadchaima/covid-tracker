@@ -49,6 +49,7 @@ export class CasesListComponent implements OnInit {
   years: DateMY[] = []
 
   chartData: any;
+  countryName: any;
 
   constructor(private fb: FormBuilder, private casesService: CasesService, private areaService: AreaService) { }
 
@@ -84,6 +85,7 @@ export class CasesListComponent implements OnInit {
           this.nbr.length = 0;
           for (let i = 0; i < this.selectedCases.length; i++) {
             let date = formatDate(new Date(this.selectedCases[i].date), 'dd-MMM-yyyy', 'en');
+            this.countryName = this.allCases[i].name ;
             this.getByMonthYear(this.casesForm.value.month, this.casesForm.value.year, new Date(this.selectedCases[i].date), this.selectedCases[i].newCasesByPublishDate, this.nbr);
           }
         }
@@ -97,7 +99,7 @@ export class CasesListComponent implements OnInit {
             // console.log(this.selectedCases);
             this.nbr.length = 0;
             for (let i = 0; i < this.selectedCases.length; i++) {
-
+              this.countryName = this.allCases[i].name ;
               this.getByMonthYear(this.casesForm.value.month, this.casesForm.value.year, new Date(this.selectedCases[i].date), this.selectedCases[i].newCasesByPublishDate, this.nbr)
 
             }
@@ -120,7 +122,7 @@ export class CasesListComponent implements OnInit {
           this.nbr.length = 0;
           for (let i = 0; i < this.allCases.length; i++) {
             let date = formatDate(new Date(this.allCases[i].date), 'dd-MMM-yyyy', 'en');
-
+            this.countryName = this.allCases[i].name ;
             this.nbr.push([date, this.allCases[i].newCasesByPublishDate]);
 
           }

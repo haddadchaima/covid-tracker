@@ -1,10 +1,18 @@
-<h3 class="ml-3 mt-3">Vaccinated People</h3>
+<h3 class="ml-3 mt-3">Vaccinated People in <b>{{ countryName}}</b></h3>
 
 
 <!-- Daily -->
 
 <div class="btn-group mt-3">
 <form  [formGroup]="casesForm" (ngSubmit)="getCasesBySelect()">
+<mat-form-field appearance="fill" class="ml-3">
+  <mat-label>Dose</mat-label>
+  <mat-select formControlName="dose">
+    <mat-option *ngFor="let dose of doses" [value]="dose.value">
+      {{dose.viewValue}}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
 
 <mat-form-field appearance="fill" class="ml-3">
   <mat-label>Year</mat-label>

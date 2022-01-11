@@ -1,11 +1,12 @@
 import { formatDate } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { Case } from 'src/app/models/case';
 import { Vaccination } from 'src/app/models/vaccination';
 import { AreaService } from 'src/app/services/area.service';
 import { VaccinationsService } from 'src/app/services/vaccinations.service';
 
-interface DateMY {
+interface ValueSelect {
   value: number;
   viewValue: string;
 }
@@ -17,7 +18,7 @@ interface DateMY {
 })
 export class VaccinationsListComponent implements OnInit {
 
-  public vaccinations: Vaccination = [];
+  public vaccination: Case = [];
   public allVaccinations: any;
   public selectedVaccinations: any;
   public canvas: any;
@@ -25,10 +26,14 @@ export class VaccinationsListComponent implements OnInit {
   public nbr: any = [];
   public areas: any = [];
   public allAreas: any;
-  public columnNames: any = ["Day", "janvier"];
+  public countryName : string = "" ;
   casesForm!: FormGroup;
 
-  years: DateMY[] = []
+  years: ValueSelect[] = [] ;
+  doses: ValueSelect[] = [
+    {value: 1, viewValue: "First Dose"},
+    {value: 2, viewValue: "Second Dose"}
+  ]
 
   chartData: any;
 
@@ -44,72 +49,72 @@ export class VaccinationsListComponent implements OnInit {
     }
 
     this.getAllAreas();
-    this.getAllCases();
+    this.getAllVaccination();
 
     this.casesForm = this.fb.group({
       area: [null],
-      month: [null],
-      // year: [null],
+      dose: [1],
       year: [new Date().getFullYear()],
     });
 
   }
 
   getCasesBySelect() {
-    // console.log(this.casesForm.value);
-    // if (this.casesForm.value.area != null) {
-    //   this.casesService.getBySelect(this.casesForm.value.area).subscribe({
-    //     next: (data) => {
-    //       this.cases = data;
-    //       this.selectedCases = this.cases.data;
-    //       console.log(this.selectedCases);
-    //       this.nbr.length = 0;
-    //       for (let i = 0; i < this.selectedCases.length; i++) {
-    //         let date = formatDate(new Date(this.selectedCases[i].date), 'dd-MMM-yyyy', 'en');
-    //         this.getByMonthYear(this.casesForm.value.month, this.casesForm.value.year, new Date(this.selectedCases[i].date), this.selectedCases[i].newCasesByPublishDate, this.nbr);
-    //       }
-    //     }
-    //   });
-    // } else {
-    //   this.casesService.getAll()
-    //     .subscribe({
-    //       next: (data) => {
-    //         this.cases = data;
-    //         this.selectedCases = this.cases.data;
-    //         // console.log(this.selectedCases);
-    //         this.nbr.length = 0;
-    //         for (let i = 0; i < this.selectedCases.length; i++) {
+    console.log(this.casesForm.value);
+    if (this.casesForm.value.area != null) {
+      this.casesService.getBySelect(this.casesForm.value.area).subscribe({
+        next: (data) => {
+          this.vaccination = data;
+          this.selectedVaccinations = this.vaccination.data;
+          console.log(this.selectedVaccinations);
+          this.nbr.length = 0;
+          for (let i = 0; i < this.selectedVaccinations.length; i++) {
+            let date = formatDate(new Date(this.selectedVaccinations[i].date), 'dd-MMM-yyyy', 'en');
+            this.countryName = this.allVaccinations[i].name ;
+            this.getByDoseYear(this.casesForm.value.dose, this.casesForm.value.year, new Date(this.selectedVaccinations[i].date), this.selectedVaccinations[i].newPeopleVaccinatedFirstDoseByVaccinationDate, this.selectedVaccinations[i].newPeopleVaccinatedSecondDoseByVaccinationDate , this.nbr);
+          }
+        }
+      });
+    } else {
+      this.casesService.getAll()
+        .subscribe({
+          next: (data) => {
+            this.vaccination = data;
+            this.selectedVaccinations = this.vaccination.data;
+            // console.log(this.selectedCases);
+            this.nbr.length = 0;
+            for (let i = 0; i < this.selectedVaccinations.length; i++) {
+              this.countryName = this.allVaccinations[i].name ;
+              this.getByDoseYear(this.casesForm.value.dose, this.casesForm.value.year, new Date(this.selectedVaccinations[i].date), this.selectedVaccinations[i].newPeopleVaccinatedFirstDoseByVaccinationDate, this.selectedVaccinations[i].newPeopleVaccinatedSecondDoseByVaccinationDate , this.nbr);
 
-    //           this.getByMonthYear(this.casesForm.value.month, this.casesForm.value.year, new Date(this.selectedCases[i].date), this.selectedCases[i].newCasesByPublishDate, this.nbr)
-
-    //         }
-    //       },
-    //       error: (e) => console.error(e)
-    //     });
-    // }
+            }
+          },
+          error: (e) => console.error(e)
+        });
+    }
 
   }
 
 
-  getAllCases() {
-    // this.casesService.getAll()
-    //   .subscribe({
-    //     next: (data) => {
-    //       this.cases = data;
-    //       this.allCases = this.cases.data;
-    //       console.log(this.allCases);
+  getAllVaccination() {
+    this.casesService.getAll()
+      .subscribe({
+        next: (data) => {
+          this.vaccination = data;
+          this.allVaccinations = this.vaccination.data;
+          console.log(this.vaccination);
 
-    //       this.nbr.length = 0;
-    //       for (let i = 0; i < this.allCases.length; i++) {
-    //         let date = formatDate(new Date(this.allCases[i].date), 'dd-MMM-yyyy', 'en');
+          this.nbr.length = 0;
+          for (let i = 0; i < this.allVaccinations.length; i++) {
+            let date = formatDate(new Date(this.allVaccinations[i].date), 'dd-MMM-yyyy', 'en');
+            this.countryName = this.allVaccinations[i].name ;
+            this.nbr.push([date, this.allVaccinations[i].newPeopleVaccinatedFirstDoseByVaccinationDate]);
 
-    //         this.nbr.push([date, this.allCases[i].newCasesByPublishDate]);
-
-    //       }
-    //       this.drawChart(this.nbr);
-    //     },
-    //     error: (e) => console.error(e)
-    //   });
+          }
+          this.drawChart(this.nbr);
+        },
+        error: (e) => console.error(e)
+      });
 
   }
 
@@ -117,10 +122,10 @@ export class VaccinationsListComponent implements OnInit {
     this.chartData = {
       type: 'LineChart',
       data: nbr,
-      columnNames: ["Day", "Number of cases"],
+      columnNames: ["Day", "Number of vaccination per dose"],
       options: {
         hAxis: {
-          title: '- Cases by specimen date -'
+          title: '- Vaccinated People -'
         }
       },
       width: 1500,
@@ -129,27 +134,21 @@ export class VaccinationsListComponent implements OnInit {
     };
   }
 
-  getByMonthYear(month: any, year: any, selectedDate: any, newCases: any, nbr: any) {
-    // if ((month != null) && (year != null)) {
-    //   if (year + "-" + month == (selectedDate.getFullYear()) + "-" + (selectedDate.getMonth() + 1)) {
-    //     let date = formatDate(selectedDate, 'dd-MMM-yyyy', 'en');
+  getByDoseYear(dose: any, year: any, selectedDate: any, newFirstDose: string, newSecondDose: string, nbr: any) {
+    if ((dose != null) && (year != null)) {
+      if ((dose == 1 )&&(year == selectedDate.getFullYear())) {
+        let date = formatDate(selectedDate, 'dd-MMM-yyyy', 'en');
+        nbr.push([date, newFirstDose]);
+        this.drawChart(nbr);
 
-    //     nbr.push([date, newCases]);
-    //     console.log("all cases: " + nbr);
-    //     this.drawChart(nbr);
-
-    //   }
-    // } else if (year != null) {
-    //   if (year == selectedDate.getFullYear()) {
-
-    //     let date = formatDate(selectedDate, 'dd-MMM-yyyy', 'en');
-
-    //     nbr.push([date, newCases]);
-    //     this.drawChart(nbr);
-
-
-    //   }
-    // }
+      }else if ((dose == 2 )&&(year == selectedDate.getFullYear())) {
+        if (year == selectedDate.getFullYear()) {
+          let date = formatDate(selectedDate, 'dd-MMM-yyyy', 'en');
+          nbr.push([date, newSecondDose]);
+          this.drawChart(nbr);
+        }
+      }
+    }
   }
 
   getAllAreas() {

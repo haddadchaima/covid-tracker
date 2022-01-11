@@ -6,7 +6,7 @@ import { Vaccination } from '../models/vaccination';
 
 const baseUrl = 'https://api.coronavirus.data.gov.uk/v1/data?' ;
 const filters = 'filters=areaCode=E07000148;areaType=ltla' ;
-const structure = '&structure={"date":"date","name":"areaName","code":"areaCode","newCasesByPublishDate":"newCasesByPublishDate","cumCasesByPublishDate":"cumCasesByPublishDate"}';
+const structure = '&structure={"date":"date","name":"areaName","code":"areaCode","newCasesByPublishDate":"newCasesByPublishDate","cumCasesByPublishDate":"cumCasesByPublishDate", "newPeopleVaccinatedFirstDoseByVaccinationDate": "newPeopleVaccinatedFirstDoseByVaccinationDate", "newPeopleVaccinatedSecondDoseByVaccinationDate":"newPeopleVaccinatedSecondDoseByVaccinationDate"}';
 
 @Injectable({
   providedIn: 'root'
