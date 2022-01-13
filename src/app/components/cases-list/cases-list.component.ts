@@ -22,14 +22,12 @@ export class CasesListComponent implements OnInit {
   public cases: Case = [];
   public allCases: any;
   public selectedCases: any;
-  public canvas: any;
-  public ctx: any;
   public nbr: any = [];
   public areas: any = [];
   public allAreas: any;
-  public columnNames: any = ["Day", "janvier"];
   casesForm!: FormGroup;
 
+  /** fill all months in select */
   months: DateMY[] = [
     { value: 1, viewValue: 'January' },
     { value: 2, viewValue: 'February' },
@@ -56,33 +54,40 @@ export class CasesListComponent implements OnInit {
 
   ngOnInit(): void {
 
+    /** get all covid years dynamically by initiate to first year of covid until to current year  */
     for (let i = 0; i <= (new Date().getFullYear() - 2020); i++) {
       let firstYear = 2020;
       let selectYear = firstYear + i;
       this.years.push({ value: selectYear, viewValue: selectYear.toString() })
     }
 
+    /** get areas(countries) from api to fill select form of country and to let user select the affected people by country */ 
     this.getAllAreas();
+
+    /** get and subscribre all cases added by api */ 
     this.getAllCases();
 
+
+    /** fill the default values of select form */
     this.casesForm = this.fb.group({
       area: [null],
       month: [null],
-      // year: [null],
       year: [new Date().getFullYear()],
     });
 
   }
 
+  /** get selected cases either by selecting country or by default country from api  */
   getCasesBySelect() {
-    console.log(this.casesForm.value);
     if (this.casesForm.value.area != null) {
       this.casesService.getBySelect(this.casesForm.value.area).subscribe({
         next: (data) => {
           this.cases = data;
           this.selectedCases = this.cases.data;
-          console.log(this.selectedCases);
+          /** empty the array of nbr field to fill with new selecting data */
           this.nbr.length = 0;
+
+          /** loop the data and push the new cases in this.nbr field to put it in chart data with date which selected by month or year or both */
           for (let i = 0; i < this.selectedCases.length; i++) {
             let date = formatDate(new Date(this.selectedCases[i].date), 'dd-MMM-yyyy', 'en');
             this.countryName = this.allCases[i].name ;
@@ -96,12 +101,12 @@ export class CasesListComponent implements OnInit {
           next: (data) => {
             this.cases = data;
             this.selectedCases = this.cases.data;
-            // console.log(this.selectedCases);
             this.nbr.length = 0;
+
+            /** loop the data and push the new cases in this.nbr field to put it in chart data with date which selected by month or year or both */
             for (let i = 0; i < this.selectedCases.length; i++) {
               this.countryName = this.allCases[i].name ;
               this.getByMonthYear(this.casesForm.value.month, this.casesForm.value.year, new Date(this.selectedCases[i].date), this.selectedCases[i].newCasesByPublishDate, this.nbr)
-
             }
           },
           error: (e) => console.error(e)
@@ -111,6 +116,7 @@ export class CasesListComponent implements OnInit {
   }
 
 
+  /** get all cases by default daily and norwich area without selecting month or year or country */
   getAllCases() {
     this.casesService.getAll()
       .subscribe({
@@ -118,13 +124,13 @@ export class CasesListComponent implements OnInit {
           this.cases = data;
           this.allCases = this.cases.data;
           console.log(this.allCases);
-
           this.nbr.length = 0;
+
+          /** loop the data and push the new cases in this.nbr field to put it in chart data with date (daily) */
           for (let i = 0; i < this.allCases.length; i++) {
             let date = formatDate(new Date(this.allCases[i].date), 'dd-MMM-yyyy', 'en');
             this.countryName = this.allCases[i].name ;
             this.nbr.push([date, this.allCases[i].newCasesByPublishDate]);
-
           }
           this.drawChart(this.nbr);
         },
@@ -133,6 +139,7 @@ export class CasesListComponent implements OnInit {
 
   }
 
+  /** draw chart in each changes by selecting */
   drawChart(nbr: any) {
     this.chartData = {
       type: 'LineChart',
@@ -149,25 +156,19 @@ export class CasesListComponent implements OnInit {
     };
   }
 
+  /** select cases by selecting month and year together or by only year */
   getByMonthYear(month: any, year: any, selectedDate: any, newCases: any, nbr: any) {
     if ((month != null) && (year != null)) {
       if (year + "-" + month == (selectedDate.getFullYear()) + "-" + (selectedDate.getMonth() + 1)) {
         let date = formatDate(selectedDate, 'dd-MMM-yyyy', 'en');
-
         nbr.push([date, newCases]);
-        console.log("all cases: " + nbr);
         this.drawChart(nbr);
-
       }
     } else if (year != null) {
       if (year == selectedDate.getFullYear()) {
-
         let date = formatDate(selectedDate, 'dd-MMM-yyyy', 'en');
-
         nbr.push([date, newCases]);
         this.drawChart(nbr);
-
-
       }
     }
   }

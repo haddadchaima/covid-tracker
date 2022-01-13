@@ -20,8 +20,6 @@ export class VaccinationsListComponent implements OnInit {
   public vaccination: Case = [];
   public allVaccinations: any;
   public selectedVaccinations: any;
-  public canvas: any;
-  public ctx: any;
   public nbr: any = [];
   public areas: any = [];
   public allAreas: any;
@@ -29,6 +27,8 @@ export class VaccinationsListComponent implements OnInit {
   casesForm!: FormGroup;
 
   years: ValueSelect[] = [] ;
+
+  /** fill select form with the doses */
   doses: ValueSelect[] = [
     {value: 1, viewValue: "First Dose"},
     {value: 2, viewValue: "Second Dose"}
@@ -41,23 +41,29 @@ export class VaccinationsListComponent implements OnInit {
 
   ngOnInit(): void {
 
+    /** get all covid years dynamically by initiate to first year of covid until to current year  */
     for (let i = 0; i <= (new Date().getFullYear() - 2020); i++) {
       let firstYear = 2020;
       let selectYear = firstYear + i;
       this.years.push({ value: selectYear, viewValue: selectYear.toString() })
     }
 
+    /** get areas(countries) from api to let user select affected people by country */ 
     this.getAllAreas();
+
+    /** get and subscribre all vaccination added by api */ 
     this.getAllVaccination();
 
+    /** fill the default values of select form */
     this.casesForm = this.fb.group({
       area: [null],
       dose: [1],
-      year: [new Date().getFullYear()],
+      year: [],
     });
 
   }
 
+  /** get selected cases either by selecting country or by default country from api  */
   getCasesBySelect() {
     console.log(this.casesForm.value);
     if (this.casesForm.value.area != null) {
@@ -65,8 +71,9 @@ export class VaccinationsListComponent implements OnInit {
         next: (data) => {
           this.vaccination = data;
           this.selectedVaccinations = this.vaccination.data;
-          console.log(this.selectedVaccinations);
           this.nbr.length = 0;
+
+          /** loop the data and push the new vaccination in this.nbr field to put it in chart data with date which selected by dose and year */
           for (let i = 0; i < this.selectedVaccinations.length; i++) {
             let date = formatDate(new Date(this.selectedVaccinations[i].date), 'dd-MMM-yyyy', 'en');
             this.countryName = this.allVaccinations[i].name ;
@@ -80,12 +87,12 @@ export class VaccinationsListComponent implements OnInit {
           next: (data) => {
             this.vaccination = data;
             this.selectedVaccinations = this.vaccination.data;
-            // console.log(this.selectedCases);
             this.nbr.length = 0;
+
+            /** loop the data and push the new vaccination in this.nbr field to put it in chart data with date which selected by dose and year */
             for (let i = 0; i < this.selectedVaccinations.length; i++) {
               this.countryName = this.allVaccinations[i].name ;
               this.getByDoseYear(this.casesForm.value.dose, this.casesForm.value.year, new Date(this.selectedVaccinations[i].date), this.selectedVaccinations[i].newPeopleVaccinatedFirstDoseByVaccinationDate, this.selectedVaccinations[i].newPeopleVaccinatedSecondDoseByVaccinationDate , this.nbr);
-
             }
           },
           error: (e) => console.error(e)
@@ -101,14 +108,13 @@ export class VaccinationsListComponent implements OnInit {
         next: (data) => {
           this.vaccination = data;
           this.allVaccinations = this.vaccination.data;
-          console.log(this.vaccination);
-
           this.nbr.length = 0;
+
+          /** loop the data and push the new vaccination in this.nbr field to put it in chart data (daily) */
           for (let i = 0; i < this.allVaccinations.length; i++) {
             let date = formatDate(new Date(this.allVaccinations[i].date), 'dd-MMM-yyyy', 'en');
             this.countryName = this.allVaccinations[i].name ;
             this.nbr.push([date, this.allVaccinations[i].newPeopleVaccinatedFirstDoseByVaccinationDate]);
-
           }
           this.drawChart(this.nbr);
         },
@@ -117,6 +123,7 @@ export class VaccinationsListComponent implements OnInit {
 
   }
 
+  /** draw chart in each changes by selecting */
   drawChart(nbr: any) {
     this.chartData = {
       type: 'LineChart',
@@ -133,6 +140,7 @@ export class VaccinationsListComponent implements OnInit {
     };
   }
 
+  /** get vaccination by selecting year and dose */
   getByDoseYear(dose: any, year: any, selectedDate: any, newFirstDose: string, newSecondDose: string, nbr: any) {
     if ((dose != null) && (year != null)) {
       if ((dose == 1 )&&(year == selectedDate.getFullYear())) {

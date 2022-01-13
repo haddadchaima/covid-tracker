@@ -6,7 +6,11 @@
 <h3 class="ml-3 mt-3">Vaccinated People in <b>{{ countryName}}</b></h3>
 
 <div class="btn-group mt-3">
+
+<!-- using formGroup to bind the select view to component ts  -->
 <form  [formGroup]="casesForm" (ngSubmit)="getCasesBySelect()">
+
+<!-- using component form of library materiel-->
 <mat-form-field appearance="fill" class="ml-3">
   <mat-label>Dose</mat-label>
   <mat-select formControlName="dose">
@@ -47,7 +51,6 @@
     [options]="chartData.options" 
     [width]="chartData.width"
     [height]="chartData.height">
-      
 </google-chart>
 </div>
 
